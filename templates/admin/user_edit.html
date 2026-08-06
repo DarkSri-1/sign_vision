@@ -1,0 +1,38 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Edit user — Admin{% endblock %}
+{% block admin_header %}
+<nav aria-label="breadcrumb"><ol class="breadcrumb user-breadcrumb mb-2">
+  <li class="breadcrumb-item"><a href="{{ url_for('admin.users') }}">Users</a></li>
+  <li class="breadcrumb-item"><a href="{{ url_for('admin.user_detail', uid=user.id) }}">{{ user.username }}</a></li>
+  <li class="breadcrumb-item active">Edit</li>
+</ol></nav>
+<h1 class="h3 fw-bold text-white mb-1">Edit user</h1>
+<p class="admin-text-subtle">Update profile, roles, status, or set a new password.</p>
+{% endblock %}
+{% block admin_body %}
+<div class="row">
+  <div class="col-lg-7">
+    <div class="card card-app">
+      <div class="card-body">
+        <form method="post">
+          {{ form.hidden_tag() }}
+          <div class="mb-3">{{ form.full_name.label(class="form-label") }}{{ form.full_name(class="form-control") }}</div>
+          <div class="mb-3">{{ form.email.label(class="form-label") }}{{ form.email(class="form-control") }}</div>
+          <div class="mb-3">{{ form.username.label(class="form-label") }}{{ form.username(class="form-control") }}</div>
+          <div class="mb-3 form-check">{{ form.is_admin(class="form-check-input") }}{{ form.is_admin.label(class="form-check-label") }}</div>
+          {% if user.id == current_user.id %}<p class="small admin-text-subtle">Your account stays administrator and active; changes to those flags are ignored.</p>{% endif %}
+          <div class="mb-3 form-check">{{ form.is_active(class="form-check-input") }}{{ form.is_active.label(class="form-check-label") }}</div>
+          <hr class="border-secondary border-opacity-25">
+          <p class="fw-semibold text-white-50 small">Change password (optional)</p>
+          <div class="mb-3">{{ form.new_password.label(class="form-label") }}{{ form.new_password(class="form-control") }}</div>
+          <div class="mb-3">{{ form.confirm_password.label(class="form-label") }}{{ form.confirm_password(class="form-control") }}</div>
+          <div class="d-flex flex-wrap gap-2">
+            {{ form.submit(class="btn btn-accent") }}
+            <a href="{{ url_for('admin.user_detail', uid=user.id) }}" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

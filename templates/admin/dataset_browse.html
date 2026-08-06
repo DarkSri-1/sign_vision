@@ -1,0 +1,26 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Class {{ class_name }} — Admin{% endblock %}
+{% block admin_header %}
+<nav aria-label="breadcrumb"><ol class="breadcrumb user-breadcrumb mb-2">
+  <li class="breadcrumb-item"><a href="{{ url_for('admin.dataset') }}">Dataset</a></li>
+  <li class="breadcrumb-item active">{{ class_name }}</li>
+</ol></nav>
+<h1 class="h3 fw-bold text-white mb-1">Class: {{ class_name }}</h1>
+<p class="admin-text-subtle mb-0">Delete individual images (CRUD). Use the dataset page to remove the whole class.</p>
+{% endblock %}
+{% block admin_body %}
+<div class="row g-3">
+  {% for f in files %}
+  <div class="col-6 col-md-3">
+    <div class="card card-app p-2">
+      <img src="{{ url_for('admin.dataset_file', class_name=class_name, filename=f) }}" class="img-fluid rounded" alt="">
+      <div class="small text-center mt-2">
+        <a href="{{ url_for('admin.dataset_image_delete', cls=class_name, fn=f) }}" class="text-danger" onclick="return confirm('Delete this image?');">Delete</a>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <p class="admin-text-subtle">No images in this class.</p>
+  {% endfor %}
+</div>
+{% endblock %}

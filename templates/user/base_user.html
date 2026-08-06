@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="user-shell user-panel">
+  <aside class="user-sidebar d-none d-lg-flex flex-column">
+    <div class="user-sidebar-brand">
+      <span class="text-uppercase small user-text-subtle fw-semibold letter-space">Workspace</span>
+      <p class="mb-0 fw-semibold text-white">{{ current_user.full_name }}</p>
+      <p class="small user-text-subtle mb-0">@{{ current_user.username }}</p>
+    </div>
+    <nav class="nav flex-column gap-1 px-2">
+      <a class="user-nav-link {% if request.endpoint == 'main.dashboard' %}active{% endif %}" href="{{ url_for('main.dashboard') }}">Overview</a>
+      <a class="user-nav-link {% if request.endpoint == 'main.recognition' %}active{% endif %}" href="{{ url_for('main.recognition') }}">Live recognition</a>
+      <a class="user-nav-link {% if request.endpoint in ['main.history', 'main.history_detail'] %}active{% endif %}" href="{{ url_for('main.history') }}">History &amp; records</a>
+      <a class="user-nav-link {% if request.endpoint == 'main.evaluate' %}active{% endif %}" href="{{ url_for('main.evaluate') }}">Accuracy &amp; metrics</a>
+      <a class="user-nav-link {% if request.endpoint == 'main.profile' %}active{% endif %}" href="{{ url_for('main.profile') }}">Profile &amp; security</a>
+      <a class="user-nav-link" href="{{ url_for('main.help_page') }}">Help</a>
+    </nav>
+    <div class="mt-auto pt-3 px-3 pb-3 border-top border-secondary border-opacity-25">
+      <p class="small user-text-subtle mb-2">Signed in securely · local data</p>
+      <a class="btn btn-outline-light btn-sm w-100" href="{{ url_for('auth.logout') }}">Sign out</a>
+    </div>
+  </aside>
+  <div class="user-main">
+    <div class="user-main-inner">
+      {% block user_header %}{% endblock %}
+      {% block user_body %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}

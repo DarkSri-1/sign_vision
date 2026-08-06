@@ -1,0 +1,126 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Train — Admin{% endblock %}
+{% block admin_header %}
+<h1 class="h3 fw-bold text-white mb-1">Train &amp; models</h1>
+<p class="admin-text-subtle mb-0">Local training to <code class="text-info">sign_model.keras</code> or upload pretrained <code class="text-info">ASL.h5</code>.</p>
+{% endblock %}
+{% block admin_body %}
+
+<div class="card card-app mb-4">
+  <div class="card-header">Pretrained model (ASL.h5 / .keras)</div>
+  <div class="card-body">
+    <p class="small admin-text-subtle mb-3">If you use the <strong>Kaggle</strong> notebook input <code>ASL.h5</code> (American Sign Language dataset, ~4&nbsp;MB), download it and upload it here. The app reads the model&rsquo;s input size and channels automatically. Many notebooks add <code>Rescaling(1/255)</code> inside the network — the app now detects that and feeds <strong>0–255</strong> pixels instead of double-normalizing (which caused wrong predictions). For correct letter names, paste class labels below (one per line) in the <strong>same order as the notebook&rsquo;s training labels</strong>—usually alphabetical folder order from the ASL alphabet dataset.</p>
+    <details class="mb-3 small">
+      <summary class="fw-semibold" style="cursor:pointer;">Typical Kaggle ASL alphabet order (29 classes: A&ndash;Z + del, nothing, space)</summary>
+      <p class="admin-text-subtle mt-2 mb-1">Copy into the textarea if your model has <strong>29</strong> outputs and was trained with <code>image_dataset_from_directory</code> on the standard folder names (lexicographic order):</p>
+      <pre class="bg-dark text-light p-2 rounded small mb-0" style="white-space:pre-wrap;">A
+B
+C
+D
+E
+F
+G
+H
+I
+J
+K
+L
+M
+N
+O
+P
+Q
+R
+S
+T
+U
+V
+W
+X
+Y
+Z
+del
+nothing
+space</pre>
+      <p class="admin-text-subtle mt-2 mb-0">If your <code>ASL.h5</code> has <strong>26</strong> classes only, use A through Z on separate lines. The upload form checks that the number of lines matches the model output size.</p>
+    </details>
+    {% if pretrained_loaded %}
+    <p class="text-success mb-2"><strong>Active for predictions:</strong> <code>trained_model/pretrained_asl.h5</code></p>
+    {% if pre_meta.input_pixel_range %}
+    <p class="small admin-text-subtle mb-2">Inference uses pixel range <code class="text-info">{{ pre_meta.input_pixel_range }}</code>
+      ({% if pre_meta.input_pixel_range == '0_255' %}raw 0–255 floats; model applies 1/255 internally{% else %}values scaled to 0–1 before the first layer{% endif %}).</p>
+    {% endif %}
+    {% if pre_meta.class_names %}
+    <p class="small admin-text-subtle mb-3">{{ pre_meta.class_names | length }} classes in label file: {{ pre_meta.class_names | join(', ') }}</p>
+    {% else %}
+    <p class="small admin-text-subtle mb-3">No label file — class names are taken from your dataset folders if the class count matches the model output.</p>
+    {% endif %}
+    <form method="post" action="{{ url_for('admin.pretrained_upload') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="action" value="remove">
+      <button type="submit" class="btn btn-outline-danger btn-sm">Remove pretrained model</button>
+    </form>
+    {% else %}
+    <p class="small admin-text-subtle mb-3">Upload a Keras <code>.h5</code> or <code>.keras</code> file (for example <code>ASL.h5</code>). It is stored as <code>pretrained_asl.h5</code> and used for camera and image prediction until removed.</p>
+    <form method="post" action="{{ url_for('admin.pretrained_upload') }}" enctype="multipart/form-data">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="mb-3">
+        <label class="form-label">Model file</label>
+        <input type="file" name="model_file" class="form-control" accept=".h5,.keras,application/octet-stream" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Class names (optional)</label>
+        <textarea name="class_names" class="form-control font-monospace small" rows="6" placeholder="One label per line, in the same order as the model's softmax outputs (must match output size). Leave empty to use standard A–Z + del/nothing/space (29) or A–Z (26) when applicable."></textarea>
+        <div class="form-text">Wrong order causes wrong letters on screen even if the neural net is correct.</div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Input pixel scaling</label>
+        <select name="input_pixel_range" class="form-select">
+          <option value="auto" selected>Auto-detect (recommended)</option>
+          <option value="0_255">Force 0–255 (typical when the notebook uses layers.Rescaling(1/255) inside the model)</option>
+          <option value="0_1">Force 0–1 (divide by 255 in the app, model has no internal Rescaling)</option>
+        </select>
+        <div class="form-text">If predictions looked random before: Kaggle <code>ASL.h5</code> often needs <strong>0–255</strong> — auto-detect enables that when a Rescaling layer is present.</div>
+      </div>
+      <button type="submit" class="btn btn-accent">Upload &amp; use for prediction</button>
+    </form>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card card-app mb-4">
+  <div class="card-header">Dataset summary</div>
+  <div class="card-body">
+    <ul class="list-unstyled mb-0">
+      {% for k, v in counts.items() %}
+      <li class="d-flex justify-content-between py-1 border-bottom border-secondary"><span>{{ k }}</span><span>{{ v }} images</span></li>
+      {% else %}
+      <li class="admin-text-subtle">No images. Add dataset first.</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<form method="post" class="card card-app mb-4">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="action" value="train">
+  <div class="card-header">Start training</div>
+  <div class="card-body">
+    <div class="mb-3">
+      <label class="form-label">Epochs (default 20)</label>
+      {{ form.epochs(class="form-control", placeholder="20") }}
+    </div>
+    <button type="submit" class="btn btn-accent">Train & save model</button>
+  </div>
+</form>
+
+{% if meta %}
+<div class="card card-app">
+  <div class="card-header">Last training metadata</div>
+  <div class="card-body">
+    <p>Test accuracy: <strong>{{ "%.2f"|format(meta.test_accuracy * 100) }}%</strong></p>
+    <p class="small admin-text-subtle mb-0">Classes: {{ meta.class_names | join(', ') }}</p>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

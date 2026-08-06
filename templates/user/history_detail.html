@@ -1,0 +1,82 @@
+{% extends "user/base_user.html" %}
+{% block title %}Record #{{ record.id }} — SignVision{% endblock %}
+{% block user_header %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+  <div>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb user-breadcrumb mb-2">
+        <li class="breadcrumb-item"><a href="{{ url_for('main.history') }}">History</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Record #{{ record.id }}</li>
+      </ol>
+    </nav>
+    <h1 class="h3 fw-bold mb-1 text-white">Recognition detail</h1>
+    <p class="user-text-subtle small mb-0">Metadata, uploaded image (if any), personal note, or delete.</p>
+  </div>
+  <form method="post" action="{{ url_for('main.history_delete_one', hid=record.id) }}" class="d-inline" onsubmit="return confirm('Delete this record permanently?');">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit" class="btn btn-outline-danger">Delete record</button>
+  </form>
+</div>
+{% endblock %}
+{% block user_body %}
+<div class="row g-4">
+  <div class="col-xl-5 order-xl-2">
+    <div class="card card-app h-100">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Source image</span>
+        {% if has_upload_image %}<span class="badge bg-info text-dark">Upload</span>{% endif %}
+      </div>
+      <div class="card-body text-center">
+        {% if has_upload_image %}
+        <a href="{{ url_for('main.history_upload_image', hid=record.id) }}" target="_blank" rel="noopener" class="d-block history-image-link">
+          <img src="{{ url_for('main.history_upload_image', hid=record.id) }}" alt="Uploaded frame used for this prediction" class="img-fluid rounded history-upload-preview shadow-sm">
+        </a>
+        <p class="user-text-subtle small mt-3 mb-0">Image you uploaded for this prediction. Click to open full size.</p>
+        {% else %}
+        <div class="history-image-placeholder rounded d-flex align-items-center justify-content-center">
+          <div class="user-text-subtle small px-3">
+            {% if record.source == 'webcam' %}
+            No image stored — this row came from the live camera (frames are not saved automatically).
+            {% else %}
+            No image on file for this record (older uploads before image storage was enabled).
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4 order-xl-1">
+    <div class="card card-app h-100">
+      <div class="card-header">Record</div>
+      <div class="card-body">
+        <dl class="row mb-0 user-dl">
+          <dt class="col-sm-5">Predicted sign</dt>
+          <dd class="col-sm-7"><span class="badge bg-primary fs-6">{{ record.predicted_sign }}</span></dd>
+          <dt class="col-sm-5">Confidence</dt>
+          <dd class="col-sm-7 user-text-primary">{{ "%.2f"|format(record.confidence * 100) }}%</dd>
+          <dt class="col-sm-5">Source</dt>
+          <dd class="col-sm-7 text-capitalize user-text-primary">{{ record.source or '—' }}</dd>
+          <dt class="col-sm-5">Date &amp; time (UTC)</dt>
+          <dd class="col-sm-7 user-text-primary">{{ record.created_at.strftime('%Y-%m-%d %H:%M:%S') if record.created_at else '—' }}</dd>
+          <dt class="col-sm-5">Record ID</dt>
+          <dd class="col-sm-7 font-monospace small user-text-primary">{{ record.id }}</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-3 order-xl-3">
+    <div class="card card-app h-100">
+      <div class="card-header">Personal note</div>
+      <div class="card-body">
+        <p class="small user-text-subtle">Optional — for your reference only.</p>
+        <form method="post" action="{{ url_for('main.history_update_note', hid=record.id) }}">
+          {{ note_form.hidden_tag() }}
+          <div class="mb-3">{{ note_form.user_note.label(class="form-label user-form-label") }}{{ note_form.user_note() }}</div>
+          <div class="d-grid">{{ note_form.submit(class="btn btn-accent") }}</div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

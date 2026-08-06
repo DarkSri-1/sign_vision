@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block body_class %}guest-landing{% endblock %}
+{% block title %}SignVision AI — Intelligent Sign Language Recognition{% endblock %}
+{% block content %}
+<section class="hero-landing" id="top">
+  <div class="hero-bg"></div>
+  <div class="container position-relative py-5">
+    <div class="row align-items-center min-vh-75 py-5">
+      <div class="col-lg-7 text-white">
+        <p class="text-uppercase letter-space text-accent-hero mb-2">Local AI · No cloud required</p>
+        <h1 class="display-4 fw-bold mb-4 hero-title">Recognize sign language in <span class="text-gradient">real time</span></h1>
+        <p class="lead guest-landing-lead mb-4 col-lg-11">
+          SignVision runs entirely on your computer: train or load a model, use your webcam or upload images, and keep a full history with exports — ideal for coursework, capstone demos, and offline labs.
+        </p>
+        <div class="d-flex flex-wrap gap-3">
+          <a href="{{ url_for('auth.register') }}" class="btn btn-lg btn-accent px-4">Create free account</a>
+          <a href="{{ url_for('auth.login') }}" class="btn btn-lg btn-outline-light px-4">Sign in</a>
+          <a href="{{ url_for('main.help_page') }}" class="btn btn-lg btn-outline-secondary px-4">How it works</a>
+        </div>
+        <div class="d-flex flex-wrap gap-4 mt-5 pt-2 hero-stats">
+          <div><strong class="fs-3">100%</strong><br><span class="small guest-landing-dim">On-device inference</span></div>
+          <div><strong class="fs-3">CNN</strong><br><span class="small guest-landing-dim">Keras / optional ASL.h5</span></div>
+          <div><strong class="fs-3">SQLite</strong><br><span class="small guest-landing-dim">Users &amp; history</span></div>
+        </div>
+      </div>
+      <div class="col-lg-5 mt-5 mt-lg-0">
+        <div class="hero-card p-4 rounded-4 shadow-lg">
+          <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="rounded-circle bg-success bg-opacity-25 p-2"><span class="text-success">●</span></div>
+            <span class="guest-landing-dim small">Example recognition</span>
+          </div>
+          <div class="ratio ratio-4x3 rounded-3 bg-dark d-flex align-items-center justify-content-center guest-landing-dim">
+            <div class="text-center p-3">
+              <div class="display-1 fw-bold text-gradient mb-0">A</div>
+              <small>Confidence 94%</small>
+            </div>
+          </div>
+          <p class="small guest-landing-dim mt-3 mb-0">Center crop · Grayscale/RGB to match training · Softmax class labels</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-section" id="guest-features">
+  <div class="container py-5">
+    <div class="text-center mb-5">
+      <h2 class="fw-bold section-title text-white">What you get in one application</h2>
+      <p class="guest-landing-muted col-lg-9 mx-auto mb-0">Separate areas for everyday users and administrators — all documented in Help.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="feature-card h-100 p-4 rounded-4">
+          <div class="feature-icon mb-3">01</div>
+          <h5 class="fw-semibold text-white">Accounts &amp; security</h5>
+          <p class="guest-landing-muted small mb-0">Registration, login (username or email), sessions, profile &amp; password change, forgot-password flow, CSRF protection, and hashed passwords.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card h-100 p-4 rounded-4">
+          <div class="feature-icon mb-3">02</div>
+          <h5 class="fw-semibold text-white">User workspace</h5>
+          <p class="guest-landing-muted small mb-0">Dashboard with stats, live webcam recognition, image upload (stored with history), text composer, personal history with notes, CSV/PDF export, and accuracy/metrics view.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="feature-card h-100 p-4 rounded-4">
+          <div class="feature-icon mb-3">03</div>
+          <h5 class="fw-semibold text-white">Admin &amp; ML</h5>
+          <p class="guest-landing-muted small mb-0">User CRUD, dataset folders &amp; uploads, rename/delete classes, train or upload pretrained <code class="guest-inline-code">ASL.h5</code>, global recognition log, debug logs, exports.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 border-top border-secondary border-opacity-25 guest-landing-at-a-glance">
+  <div class="container py-4">
+    <h2 class="h4 fw-bold text-white text-center mb-4">Platform at a glance</h2>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3">
+        <div class="guest-glance-card h-100 p-4 rounded-4">
+          <p class="guest-glance-label mb-1">Inference</p>
+          <p class="guest-landing-muted small mb-0">TensorFlow/Keras models (<code class="guest-inline-code">.keras</code> / <code class="guest-inline-code">.h5</code>), dynamic input size, softmax → class names from training or admin label list.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="guest-glance-card h-100 p-4 rounded-4">
+          <p class="guest-glance-label mb-1">Inputs</p>
+          <p class="guest-landing-muted small mb-0">Live webcam frames and image uploads; preprocessing matches model channels (grayscale/RGB) and resolution.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="guest-glance-card h-100 p-4 rounded-4">
+          <p class="guest-glance-label mb-1">Accounts</p>
+          <p class="guest-landing-muted small mb-0">Role-based access: standard users get workspace and history; admins additionally manage dataset, training, and global logs.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-3">
+        <div class="guest-glance-card h-100 p-4 rounded-4">
+          <p class="guest-glance-label mb-1">Storage</p>
+          <p class="guest-landing-muted small mb-0">SQLite for users and recognition history; dataset under <code class="guest-inline-code">data/dataset/</code>; optional history image copies under <code class="guest-inline-code">instance/</code>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 border-top border-secondary border-opacity-25">
+  <div class="container py-4">
+    <div class="row g-4 align-items-start">
+      <div class="col-lg-6">
+        <h3 class="fw-bold text-white mb-3">Typical workflow</h3>
+        <ol class="guest-landing-steps ps-3 mb-0">
+          <li class="mb-3"><strong class="text-white">Install</strong> — Python 3.10+, <code class="guest-inline-code">pip install -r requirements.txt</code>, run <code class="guest-inline-code">python run.py</code>.</li>
+          <li class="mb-3"><strong class="text-white">Optional seed</strong> — <code class="guest-inline-code">python seed_db.py</code> for demo users and sample data.</li>
+          <li class="mb-3"><strong class="text-white">Admin</strong> — Add dataset classes/images or upload a pretrained model; train if needed.</li>
+          <li class="mb-0"><strong class="text-white">User</strong> — Sign in, open Recognition, use camera or upload; review History and exports.</li>
+        </ol>
+      </div>
+      <div class="col-lg-6">
+        <h3 class="fw-bold text-white mb-3">Requirements &amp; privacy</h3>
+        <ul class="guest-landing-muted small ps-3 mb-4">
+          <li class="mb-2">Webcam access in a modern browser (Chrome, Edge, Firefox).</li>
+          <li class="mb-2">GPU optional; CPU training can be slow on large datasets.</li>
+          <li class="mb-2">No data is sent to external recognition APIs — models run locally.</li>
+          <li class="mb-0">Suitable for academic presentation and offline evaluation.</li>
+        </ul>
+        <div class="card card-app p-4 rounded-4">
+          <p class="small guest-landing-muted mb-2 fw-semibold text-white">Quick links</p>
+          <div class="d-flex flex-wrap gap-2">
+            <a href="{{ url_for('main.help_page') }}" class="btn btn-sm btn-outline-primary">Full documentation</a>
+            <a href="{{ url_for('auth.register') }}" class="btn btn-sm btn-accent">Register</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="py-5 bg-section">
+  <div class="container py-4 text-center">
+    <h3 class="fw-bold text-white mb-3">Ready to try it?</h3>
+    <p class="guest-landing-muted mb-4 col-lg-8 mx-auto">Create an account for the full workspace, or read Help for installation, default credentials after seeding, and troubleshooting.</p>
+    <a href="{{ url_for('main.help_page') }}" class="btn btn-outline-primary me-2 mb-2">Read Help</a>
+    <a href="{{ url_for('auth.register') }}" class="btn btn-accent mb-2">Get started</a>
+  </div>
+</section>
+{% endblock %}

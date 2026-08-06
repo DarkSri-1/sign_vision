@@ -1,0 +1,64 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Debug logs — Admin{% endblock %}
+{% block admin_header %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+  <div>
+    <h1 class="h3 fw-bold text-white mb-1">Prediction debug logs</h1>
+    <p class="admin-text-subtle mb-0">Technical rows from webcam/API · filter by user, delete one, or clear all.</p>
+  </div>
+  <form method="post" action="{{ url_for('admin.logs_clear') }}" onsubmit="return confirm('Delete ALL prediction log rows? This cannot be undone.');">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit" class="btn btn-sm btn-outline-danger">Clear all logs</button>
+  </form>
+</div>
+{% endblock %}
+{% block admin_body %}
+<form method="get" class="card card-app mb-4">
+  <div class="card-body py-3">
+    <div class="row g-2 align-items-end">
+      <div class="col-auto">{{ form.user_id.label(class="form-label") }}{{ form.user_id(class="form-control", placeholder="User ID") }}</div>
+      <div class="col-auto">{{ form.submit(class="btn btn-accent") }}</div>
+      <div class="col-auto"><a href="{{ url_for('admin.logs') }}" class="btn btn-outline-secondary">Reset</a></div>
+    </div>
+  </div>
+</form>
+
+<div class="table-responsive card card-app p-0">
+  <table class="table table-dark-custom mb-0 admin-table small">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>User</th>
+        <th>Class</th>
+        <th>Conf</th>
+        <th>Frame ms</th>
+        <th>Extra</th>
+        <th>Time</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+      <tr>
+        <td class="font-monospace">{{ r.id }}</td>
+        <td>{% if r.user %}<a class="admin-link" href="{{ url_for('admin.user_detail', uid=r.user_id) }}">{{ r.user.username }}</a>{% elif r.user_id %}<a class="admin-link" href="{{ url_for('admin.user_detail', uid=r.user_id) }}">#{{ r.user_id }}</a>{% else %}—{% endif %}</td>
+        <td>{{ r.predicted_class or '—' }}</td>
+        <td>{{ "%.2f"|format(r.confidence) if r.confidence is not none else '—' }}</td>
+        <td>{{ "%.1f"|format(r.frame_time_ms) if r.frame_time_ms is not none else '—' }}</td>
+        <td class="text-truncate" style="max-width:10rem;" title="{{ r.extra or '' }}">{{ r.extra or '—' }}</td>
+        <td class="admin-text-subtle">{{ r.created_at }}</td>
+        <td>
+          <form method="post" action="{{ url_for('admin.log_delete', lid=r.id) }}" class="d-inline" onsubmit="return confirm('Delete this log row?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% if request.args.get('user_id') %}<input type="hidden" name="user_id" value="{{ request.args.get('user_id') }}">{% endif %}
+            <button type="submit" class="btn btn-sm btn-link text-danger p-0">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="8" class="admin-text-subtle p-4">No log rows.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

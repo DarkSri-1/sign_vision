@@ -1,0 +1,150 @@
+{% extends "user/base_user.html" %}
+{% block title %}Overview — SignVision{% endblock %}
+{% block user_header %}
+<div class="mb-4">
+  <h1 class="h3 fw-bold mb-1 text-white">Overview</h1>
+  <p class="user-text-subtle mb-0">Recognition activity, model status, and shortcuts.</p>
+</div>
+{% endblock %}
+{% block user_body %}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-xl-3">
+    <div class="stat-tile stat-tile-highlight h-100">
+      <p class="mb-1">Total recognitions</p>
+      <h3 class="display-6 fs-2 mb-0">{{ total_attempts }}</h3>
+      <span class="stat-tile-sub">{{ today_count }} today</span>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="stat-tile h-100">
+      <p class="mb-1">Average confidence</p>
+      <h3 class="fs-2 mb-0">{% if avg_confidence %}{{ "%.0f"|format(avg_confidence * 100) }}%{% else %}—{% endif %}</h3>
+      <span class="stat-tile-sub">Across your history</span>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="stat-tile h-100">
+      <p class="mb-1">Inference</p>
+      <h3 class="fs-6 text-truncate mb-0">{{ inference_label }}</h3>
+      <span class="stat-tile-sub">{% if has_model %}Ready{% else %}No weights{% endif %}</span>
+    </div>
+  </div>
+  <div class="col-6 col-xl-3">
+    <div class="stat-tile h-100">
+      <p class="mb-1">Dataset classes</p>
+      <h3 class="fs-2 mb-0">{{ class_counts|length }}</h3>
+      <span class="stat-tile-sub">Folders under data</span>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="card card-app h-100">
+      <div class="card-header small user-text-subtle text-uppercase letter-space">By source</div>
+      <div class="card-body user-text-primary">
+        <div class="d-flex justify-content-between py-2 border-bottom border-secondary border-opacity-25">
+          <span>Webcam</span><strong>{{ webcam_count }}</strong>
+        </div>
+        <div class="d-flex justify-content-between py-2">
+          <span>File upload</span><strong>{{ upload_count }}</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="card card-app h-100">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Top signs (your history)</span>
+        <a href="{{ url_for('main.history') }}" class="small">Manage records</a>
+      </div>
+      <div class="card-body">
+        {% if top_signs %}
+        <div class="row g-2">
+          {% for sign, cnt in top_signs %}
+          <div class="col-6 col-sm-4 col-md-3">
+            <div class="d-flex justify-content-between align-items-center rounded px-2 py-2 top-sign-pill">
+              <span class="fw-semibold text-truncate me-1">{{ sign }}</span>
+              <span class="badge">{{ cnt }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="user-text-subtle mb-0 small">No data yet. Run live recognition or upload an image.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card card-app mb-3">
+      <div class="card-header">Last prediction</div>
+      <div class="card-body">
+        {% if last_prediction %}
+        <div class="d-flex flex-wrap align-items-start gap-3">
+          {% if last_prediction.source_image_relpath and last_prediction.source == 'upload' %}
+          <a href="{{ url_for('main.history_upload_image', hid=last_prediction.id) }}" class="flex-shrink-0 dashboard-thumb-wrap">
+            <img src="{{ url_for('main.history_upload_image', hid=last_prediction.id) }}" alt="" class="rounded dashboard-thumb">
+          </a>
+          {% endif %}
+          <div>
+            <div class="d-flex flex-wrap align-items-baseline gap-2 mb-2">
+              <span class="badge bg-primary fs-5">{{ last_prediction.predicted_sign }}</span>
+              <span class="user-text-subtle">{{ "%.1f"|format(last_prediction.confidence * 100) }}% confidence</span>
+            </div>
+            <p class="small user-text-subtle mb-0">{{ last_prediction.created_at.strftime('%Y-%m-%d %H:%M UTC') }} · {{ last_prediction.source or 'webcam' }}</p>
+          </div>
+        </div>
+        {% else %}
+        <p class="user-text-subtle mb-0">No predictions yet.</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="card card-app">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Recent activity</span>
+        <a href="{{ url_for('main.history') }}" class="small">View all</a>
+      </div>
+      <div class="card-body p-0 table-responsive">
+        <table class="table table-dark-custom mb-0 align-middle user-table">
+          <thead><tr><th>Sign</th><th>Confidence</th><th>Source</th><th>When</th><th></th></tr></thead>
+          <tbody>
+            {% for r in recent %}
+            <tr>
+              <td class="fw-semibold">{{ r.predicted_sign }}</td>
+              <td>{{ "%.0f"|format(r.confidence * 100) }}%</td>
+              <td class="text-capitalize small">{{ r.source or '—' }}</td>
+              <td class="small user-text-subtle">{{ r.created_at.strftime('%m-%d %H:%M') }}</td>
+              <td><a class="small user-table-link" href="{{ url_for('main.history_detail', hid=r.id) }}">Open</a></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="user-text-subtle px-3 py-4">No records.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card card-app mb-3">
+      <div class="card-header">Quick actions</div>
+      <div class="card-body d-grid gap-2 quick-actions">
+        <a class="btn btn-accent" href="{{ url_for('main.recognition') }}">Start live recognition</a>
+        <a class="btn btn-outline-primary" href="{{ url_for('main.history') }}">Search &amp; edit history</a>
+        <a class="btn btn-outline-primary" href="{{ url_for('main.evaluate') }}">Open accuracy report</a>
+        <a class="btn btn-outline-secondary" href="{{ url_for('main.profile') }}">Profile &amp; password</a>
+      </div>
+    </div>
+    <div class="card card-app border border-secondary border-opacity-25">
+      <div class="card-body small">
+        <p class="mb-2 fw-semibold user-text-primary">Account</p>
+        <p class="mb-1 user-text-subtle">Last login: <span class="user-text-primary">{{ current_user.last_login.strftime('%Y-%m-%d %H:%M UTC') if current_user.last_login else '—' }}</span></p>
+        <p class="mb-0 user-text-subtle">Member since <span class="user-text-primary">{{ current_user.created_at.strftime('%Y-%m-%d') if current_user.created_at else '—' }}</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

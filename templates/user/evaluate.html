@@ -1,0 +1,51 @@
+{% extends "user/base_user.html" %}
+{% block title %}Accuracy &amp; metrics — SignVision{% endblock %}
+{% block user_header %}
+<div class="mb-4">
+  <h1 class="h3 fw-bold mb-1 text-white">Accuracy &amp; metrics</h1>
+  <p class="user-text-subtle mb-0">Evaluation from the last local training run. If a pretrained model is active, live recognition uses that checkpoint; notes appear below when relevant.</p>
+</div>
+{% endblock %}
+{% block user_body %}
+{% if meta.get('pretrained_only_note') %}
+<div class="alert alert-info border-0 shadow-sm">{{ meta.pretrained_only_note }}</div>
+{% endif %}
+{% if meta.get('local_training_note') %}
+<div class="alert alert-warning border-0 shadow-sm small">{{ meta.local_training_note }}</div>
+{% endif %}
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="card card-app mb-4">
+      <div class="card-header">Test accuracy</div>
+      <div class="card-body">
+        {% if meta.get('test_accuracy') is not none %}
+        <p class="display-6 mb-0">{{ "%.2f"|format((meta.get('test_accuracy') or 0) * 100) }}%</p>
+        <p class="user-text-subtle small mb-0">Held-out split from your local dataset.</p>
+        {% else %}
+        <p class="user-text-subtle mb-0">No local training accuracy. Train <code>sign_model.keras</code> or rely on your pretrained weights for recognition.</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="card card-app">
+      <div class="card-header">Samples per class</div>
+      <div class="card-body">
+        <ul class="list-unstyled mb-0 small">
+          {% for k, v in (meta.get('samples_per_class') or {}).items() %}
+          <li class="d-flex justify-content-between border-bottom border-secondary border-opacity-25 py-2 user-text-primary"><span>{{ k }}</span><span>{{ v }}</span></li>
+          {% else %}
+          <li class="user-text-subtle">No breakdown.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    <div class="card card-app">
+      <div class="card-header">Classification report (test)</div>
+      <div class="card-body small" style="overflow:auto; max-height:70vh;">
+        <pre class="user-text-subtle mb-0 small">{{ (meta.get('classification_report') or {}) | tojson(indent=2) }}</pre>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

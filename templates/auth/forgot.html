@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block body_class %}guest-auth{% endblock %}
+{% block title %}Forgot password — SignVision{% endblock %}
+{% block content %}
+<div class="guest-auth-page">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-5">
+        <div class="auth-card shadow-lg">
+          <p class="guest-auth-kicker small mb-2">Account recovery</p>
+          <h1 class="mb-1 h3 fw-bold text-white">Verify identity</h1>
+          <p class="guest-auth-muted small mb-4">Enter the <strong>email</strong> and <strong>username</strong> on your account. On the next screen you will set a new password. (No email is sent — this is a local demo flow.)</p>
+          <form method="post">{{ form.hidden_tag() }}
+            <div class="mb-3">
+              {{ form.email.label(class="form-label guest-auth-label") }}{{ form.email(class="form-control guest-auth-input") }}
+              {% for e in form.email.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+              {{ form.username.label(class="form-label guest-auth-label") }}{{ form.username(class="form-control guest-auth-input") }}
+              {% for e in form.username.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+            </div>
+            <div class="d-grid">{{ form.submit(class="btn btn-accent") }}</div>
+          </form>
+          <p class="small mt-4 mb-0"><a href="{{ url_for('auth.login') }}" class="guest-auth-link">Back to sign in</a> · <a href="{{ url_for('main.landing') }}" class="guest-auth-link-muted">Home</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

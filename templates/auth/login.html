@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block body_class %}guest-auth{% endblock %}
+{% block title %}Sign in — SignVision{% endblock %}
+{% block content %}
+<div class="guest-auth-page">
+  <div class="container py-5">
+    <div class="row g-4 align-items-stretch justify-content-center">
+      <div class="col-lg-5">
+        <div class="auth-card shadow-lg h-100">
+          <p class="guest-auth-kicker small mb-2">SignVision AI</p>
+          <h1 class="mb-1 h3 fw-bold text-white">Welcome back</h1>
+          <p class="guest-auth-muted small mb-4">Sign in with your <strong>username</strong> or <strong>email</strong> and password.</p>
+          <form method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+              {{ form.username_or_email.label(class="form-label guest-auth-label") }}
+              {{ form.username_or_email(class="form-control guest-auth-input") }}
+              {% for e in form.username_or_email.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+              {{ form.password.label(class="form-label guest-auth-label") }}
+              {{ form.password(class="form-control guest-auth-input") }}
+              {% for e in form.password.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+            </div>
+            <div class="mb-3 form-check">
+              {{ form.remember(class="form-check-input") }}
+              {{ form.remember.label(class="form-check-label guest-auth-muted") }}
+            </div>
+            <div class="d-grid gap-2">
+              {{ form.submit(class="btn btn-accent") }}
+            </div>
+          </form>
+          <p class="small guest-auth-muted mt-4 mb-0">
+            <a href="{{ url_for('auth.forgot_password') }}" class="guest-auth-link">Forgot password?</a>
+            <span class="mx-1">·</span>
+            <a href="{{ url_for('auth.register') }}" class="guest-auth-link">Create account</a>
+          </p>
+          <p class="small mt-3 mb-0"><a href="{{ url_for('main.landing') }}" class="guest-auth-link-muted">← Home</a></p>
+        </div>
+      </div>
+      <div class="col-lg-5 d-none d-lg-block">
+        <div class="guest-auth-panel h-100 p-4 rounded-4 d-flex flex-column justify-content-center">
+          <h2 class="h5 fw-bold text-white mb-3">Why sign in?</h2>
+          <ul class="guest-auth-muted small ps-3 mb-4">
+            <li class="mb-2">Personal dashboard and recognition history</li>
+            <li class="mb-2">Live webcam and file upload predictions</li>
+            <li class="mb-2">Export history as CSV or PDF</li>
+            <li class="mb-0">Administrators also get dataset, training, and user tools</li>
+          </ul>
+          <p class="small guest-auth-muted mb-0">New here? <a href="{{ url_for('auth.register') }}" class="guest-auth-link">Register in under a minute</a>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

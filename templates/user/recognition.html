@@ -1,0 +1,89 @@
+{% extends "user/base_user.html" %}
+{% block title %}Live recognition — SignVision{% endblock %}
+{% block user_header %}
+<div class="mb-4">
+  <h1 class="h3 fw-bold mb-1 text-white">Live recognition</h1>
+  <p class="user-text-subtle mb-0">Webcam or image upload. Uploads are stored with each history row for review.</p>
+</div>
+{% endblock %}
+{% block user_body %}
+{% if not has_model %}
+<div class="alert alert-warning border-0 shadow-sm">No model is available. Ask an admin to train the model or upload a pretrained <code>.h5</code> file, then refresh this page.</div>
+{% endif %}
+
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card card-app mb-3">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Camera</span>
+        <span class="small user-text-subtle">Center the sign in frame for best results</span>
+      </div>
+      <div class="card-body p-0">
+        <div class="video-wrap mb-0">
+          <video id="liveVideo" autoplay playsinline muted></video>
+          <canvas id="capCanvas" class="d-none"></canvas>
+        </div>
+      </div>
+      <div class="card-footer border-secondary border-opacity-25 bg-transparent">
+        <div class="d-flex flex-wrap gap-2 mb-2">
+          <button type="button" class="btn btn-accent" id="btnStart" {% if not has_model %}disabled{% endif %}>Start camera</button>
+          <button type="button" class="btn btn-outline-danger" id="btnStop" disabled>Stop</button>
+          <button type="button" class="btn btn-outline-light" id="btnSaveFrame" disabled>Save frame</button>
+        </div>
+        <p class="small user-text-subtle mb-0" id="statusLine">Camera stopped. Start the camera when you are ready.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card card-app mb-3">
+      <div class="card-header">Current prediction</div>
+      <div class="card-body">
+        <p class="mb-1">Predicted sign: <strong id="predSign" class="fs-5">—</strong></p>
+        <p class="mb-0">Confidence: <strong id="predConf">—</strong></p>
+      </div>
+    </div>
+    <div class="card card-app mb-3">
+      <div class="card-header">Compose text</div>
+      <div class="card-body">
+        <textarea id="textOut" class="form-control output-box mb-2" rows="4" readonly placeholder="Append predictions with “Add prediction”…"></textarea>
+        <div class="d-flex flex-wrap gap-2">
+          <button type="button" class="btn btn-sm btn-outline-primary" id="btnAdd">Add prediction</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="btnSpace">Space</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="btnDel">Delete last</button>
+          <button type="button" class="btn btn-sm btn-outline-danger" id="btnClearText">Clear text</button>
+          <button type="button" class="btn btn-sm btn-outline-warning" id="btnClearPred">Clear prediction</button>
+        </div>
+      </div>
+    </div>
+    <div class="card card-app">
+      <div class="card-header">Predict from file</div>
+      <div class="card-body">
+        <form method="post" action="{{ url_for('main.upload_predict') }}" enctype="multipart/form-data">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="file" name="file" accept="image/*" class="form-control mb-2" required>
+          <button type="submit" class="btn btn-outline-primary w-100" {% if not has_model %}disabled{% endif %}>Upload &amp; predict</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card card-app mt-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>Model output classes</span>
+    <a href="{{ url_for('main.history') }}" class="small">History</a>
+  </div>
+  <div class="card-body">
+    {% if class_names %}
+    <div class="d-flex flex-wrap gap-2">
+      {% for c in class_names %}<span class="badge bg-secondary">{{ c }}</span>{% endfor %}
+    </div>
+    {% else %}
+    <p class="user-text-subtle mb-0">No class list available.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/recognition.js') }}"></script>
+{% endblock %}

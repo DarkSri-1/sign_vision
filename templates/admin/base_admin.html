@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="admin-shell admin-panel">
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-mark">SV</span>
+      <span class="ms-2 fw-semibold text-white">Admin</span>
+      <p class="admin-text-subtle small mb-0 mt-1">Control center</p>
+    </div>
+    <nav class="nav flex-column">
+      <a class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}" href="{{ url_for('admin.dashboard') }}">Overview</a>
+      <a class="nav-link {% if request.endpoint in ['admin.users','admin.user_detail','admin.user_create','admin.user_edit'] %}active{% endif %}" href="{{ url_for('admin.users') }}">Users</a>
+      <a class="nav-link {% if request.endpoint in ['admin.dataset','admin.dataset_browse'] %}active{% endif %}" href="{{ url_for('admin.dataset') }}">Dataset</a>
+      <a class="nav-link {% if request.endpoint == 'admin.train' %}active{% endif %}" href="{{ url_for('admin.train') }}">Train &amp; models</a>
+      <a class="nav-link {% if request.endpoint in ['admin.history','admin.history_record'] %}active{% endif %}" href="{{ url_for('admin.history') }}">Recognition log</a>
+      <a class="nav-link {% if request.endpoint == 'admin.logs' %}active{% endif %}" href="{{ url_for('admin.logs') }}">Debug logs</a>
+      <hr class="border-secondary mx-3">
+      <a class="nav-link" href="{{ url_for('main.dashboard') }}">User workspace</a>
+      <a class="nav-link" href="{{ url_for('main.help_page') }}">Help</a>
+      <a class="nav-link" href="{{ url_for('auth.logout') }}">Sign out</a>
+    </nav>
+  </aside>
+  <div class="admin-content admin-main-inner">
+    {% block admin_header %}{% endblock %}
+    {% block admin_body %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

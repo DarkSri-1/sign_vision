@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block body_class %}guest-auth{% endblock %}
+{% block title %}Create account — SignVision{% endblock %}
+{% block content %}
+<div class="guest-auth-page">
+  <div class="container py-5">
+    <div class="row g-4 align-items-stretch justify-content-center">
+      <div class="col-lg-6">
+        <div class="auth-card shadow-lg h-100">
+          <p class="guest-auth-kicker small mb-2">SignVision AI</p>
+          <h1 class="mb-1 h3 fw-bold text-white">Create your account</h1>
+          <p class="guest-auth-muted small mb-4">All fields are required. Password must be at least 6 characters.</p>
+          <form method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <div class="row g-3">
+              <div class="col-md-12">
+                {{ form.full_name.label(class="form-label guest-auth-label") }}{{ form.full_name(class="form-control guest-auth-input") }}
+                {% for e in form.full_name.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              </div>
+              <div class="col-md-12">
+                {{ form.email.label(class="form-label guest-auth-label") }}{{ form.email(class="form-control guest-auth-input") }}
+                {% for e in form.email.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              </div>
+              <div class="col-md-12">
+                {{ form.username.label(class="form-label guest-auth-label") }}{{ form.username(class="form-control guest-auth-input") }}
+                {% for e in form.username.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                {{ form.password.label(class="form-label guest-auth-label") }}{{ form.password(class="form-control guest-auth-input") }}
+                {% for e in form.password.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              </div>
+              <div class="col-md-6">
+                {{ form.confirm_password.label(class="form-label guest-auth-label") }}{{ form.confirm_password(class="form-control guest-auth-input") }}
+                {% for e in form.confirm_password.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+              </div>
+            </div>
+            <div class="d-grid mt-4">{{ form.submit(class="btn btn-accent") }}</div>
+          </form>
+          <p class="small guest-auth-muted mt-4 mb-0"><a href="{{ url_for('auth.login') }}" class="guest-auth-link">Already have an account? Sign in</a></p>
+          <p class="small mt-2 mb-0"><a href="{{ url_for('main.landing') }}" class="guest-auth-link-muted">← Home</a></p>
+        </div>
+      </div>
+      <div class="col-lg-4 d-none d-lg-block">
+        <div class="guest-auth-panel h-100 p-4 rounded-4">
+          <h2 class="h6 fw-bold text-white mb-3">After you register</h2>
+          <ol class="guest-auth-muted small ps-3 mb-0">
+            <li class="mb-2">Open your dashboard and try <strong>Recognition</strong>.</li>
+            <li class="mb-2">An admin must provide a trained or pretrained model if none exists yet.</li>
+            <li class="mb-0">Read <a href="{{ url_for('main.help_page') }}" class="guest-auth-link">Help</a> for setup and tips.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

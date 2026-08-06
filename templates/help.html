@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block body_class %}guest-help{% endblock %}
+{% block title %}Help &amp; documentation — SignVision{% endblock %}
+{% block content %}
+<div class="container py-5 col-lg-9 help-page">
+  <div class="mb-4">
+    <h1 class="fw-bold mb-2 text-white">Help &amp; documentation</h1>
+    <p class="guest-help-intro mb-0">Setup, roles, recognition, pretrained models, and fixes for common issues.</p>
+  </div>
+
+  <div class="card card-app mb-3">
+    <div class="card-header">Quick start</div>
+    <div class="card-body help-prose">
+      <ol class="mb-0 ps-3">
+        <li class="mb-2"><strong>Install dependencies</strong> — From the project folder: <code class="help-code">pip install -r requirements.txt</code></li>
+        <li class="mb-2"><strong>Run the app</strong> — <code class="help-code">python run.py</code> then open <code class="help-code">http://127.0.0.1:5000</code></li>
+        <li class="mb-2"><strong>Optional demo data</strong> — <code class="help-code">python seed_db.py --force</code> creates sample users (see README for default admin password).</li>
+        <li class="mb-2"><strong>Register</strong> your own account or sign in with a seeded user.</li>
+        <li class="mb-0"><strong>Admins</strong> see an <strong>Admin</strong> link after login — manage dataset, training, and users there.</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="card card-app mb-3">
+    <div class="card-header">User workspace (signed-in)</div>
+    <div class="card-body help-prose">
+      <ul class="mb-0 ps-3">
+        <li class="mb-2"><strong>Overview</strong> — Totals, model status, recent activity, shortcuts.</li>
+        <li class="mb-2"><strong>Live recognition</strong> — Start camera (grant permission), or <strong>upload an image</strong>. Uploads are saved with each history row for review.</li>
+        <li class="mb-2"><strong>History</strong> — Filter, export CSV/PDF, open a record to see metadata and image (for uploads), add personal notes, delete.</li>
+        <li class="mb-2"><strong>Accuracy</strong> — Metrics from last local training; if only a pretrained model is used, some charts may be limited until you train locally.</li>
+        <li class="mb-0"><strong>Profile</strong> — Update name, username, password.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card card-app mb-3">
+    <div class="card-header">Administrator</div>
+    <div class="card-body help-prose">
+      <ul class="mb-0 ps-3">
+        <li class="mb-2"><strong>Users</strong> — Create, view, edit, activate/deactivate, delete (with safeguards for the last admin).</li>
+        <li class="mb-2"><strong>Dataset</strong> — Create class folders, bulk upload images, <strong>rename</strong> or <strong>delete</strong> a class, browse and delete single files.</li>
+        <li class="mb-2"><strong>Train &amp; models</strong> — Train <code class="help-code">sign_model.keras</code> on <code class="help-code">data/dataset/</code>, or upload pretrained <code class="help-code">ASL.h5</code> / <code class="help-code">.keras</code> with optional class labels (one per line, softmax order).</li>
+        <li class="mb-2"><strong>Recognition log</strong> — All users’ predictions; filter, open detail (including upload image), edit notes, bulk delete.</li>
+        <li class="mb-0"><strong>Debug logs</strong> — Technical prediction logs; filter by user, delete rows, or clear all.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card card-app mb-3">
+    <div class="card-header">Supported signs &amp; labels</div>
+    <div class="card-body help-prose">
+      <p class="mb-2">Training uses <strong>folder names</strong> under <code class="help-code">data/dataset/</code> as class labels. The recognition page lists the classes your <strong>active model</strong> expects.</p>
+      <p class="mb-0">For common Kaggle <strong>29-class</strong> ASL checkpoints, use labels in the usual A–Z + <code class="help-code">del</code>, <code class="help-code">nothing</code>, <code class="help-code">space</code> order if the admin upload form asks for them.</p>
+    </div>
+  </div>
+
+  <div class="card card-app mb-3">
+    <div class="card-header">Where data lives</div>
+    <div class="card-body help-prose">
+      <dl class="row mb-0">
+        <dt class="col-sm-4">Application DB</dt>
+        <dd class="col-sm-8 mb-3">SQLite file (path depends on your <code class="help-code">config</code>) — users, sessions metadata, recognition history rows, prediction debug logs.</dd>
+        <dt class="col-sm-4">Training images</dt>
+        <dd class="col-sm-8 mb-3">Folder per class under <code class="help-code">data/dataset/&lt;class_name&gt;/</code>. Admin can upload, rename classes, or delete.</dd>
+        <dt class="col-sm-4">Trained model</dt>
+        <dd class="col-sm-8 mb-3">Default output <code class="help-code">sign_model.keras</code> (or path in config) after training; optional pretrained file e.g. <code class="help-code">ASL.h5</code> uploaded in Admin.</dd>
+        <dt class="col-sm-4">History uploads</dt>
+        <dd class="col-sm-8 mb-0">When you predict from a file, a copy may be stored under <code class="help-code">instance/history_uploads/</code> and linked from history detail.</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="card card-app mb-3">
+    <div class="card-header">Frequently asked questions</div>
+    <div class="card-body help-prose">
+      <dl class="mb-0">
+        <dt>Do I need an internet connection?</dt>
+        <dd class="mb-3">After installing Python packages, recognition runs locally. The UI loads fonts and Bootstrap from CDNs — for fully offline use, vendor those assets.</dd>
+        <dt>Can I use my own Kaggle or Colab model?</dt>
+        <dd class="mb-3">Yes. Export as Keras <code class="help-code">.h5</code> or <code class="help-code">.keras</code>, upload in Admin → Train, and paste class labels in <strong>softmax order</strong> if they differ from your local dataset.</dd>
+        <dt>Why does the UI show the wrong letter?</dt>
+        <dd class="mb-3">The network outputs class indices. If the label list does not match the checkpoint (e.g. 29-class ASL order), mapping will be wrong — update labels or retrain with matching folders.</dd>
+        <dt>Is this production-ready for accessibility?</dt>
+        <dd class="mb-0">SignVision is aimed at learning and demos. Real-world accessibility systems need broader sign coverage, signer diversity, and rigorous evaluation.</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="card card-app mb-3">
+    <div class="card-header">Camera &amp; accuracy tips</div>
+    <div class="card-body help-prose">
+      <ul class="mb-0 ps-3">
+        <li class="mb-2">Use good lighting and a plain background; center the sign in the frame (default mode uses a center crop similar to many datasets).</li>
+        <li class="mb-2">If the app is configured for MediaPipe hand crop only when an env variable is set, follow README — mismatch with training hurts accuracy.</li>
+        <li class="mb-2">Wrong <strong>class label order</strong> for a pretrained file will show wrong letters even if the network is correct — fix labels in Admin → Train.</li>
+        <li class="mb-0">Training on CPU with huge datasets can take a long time; reduce epochs for a quick test.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card card-app">
+    <div class="card-header">Troubleshooting</div>
+    <div class="card-body help-prose mb-0">
+      <dl class="row mb-0">
+        <dt class="col-sm-4">Pretrained ASL.h5: nonsensical or wrong classes</dt>
+        <dd class="col-sm-8 mb-3">Common cause was <strong>double normalization</strong> (app divided by 255 while the model also has <code class="help-code">Rescaling(1/255)</code>). Re-upload the file in Admin → Train so scaling is saved as <code class="help-code">0_255</code> when detected, or choose <strong>Force 0–255</strong>. Also paste class labels in correct softmax order (29 lines: A–Z, del, nothing, space).</dd>
+        <dt class="col-sm-4">No model / errors on predict</dt>
+        <dd class="col-sm-8 mb-3">Train in Admin or upload a valid pretrained file; restart the server after config changes.</dd>
+        <dt class="col-sm-4">Camera blocked</dt>
+        <dd class="col-sm-8 mb-3">Check browser permissions; some browsers need HTTPS for camera on non-localhost hosts.</dd>
+        <dt class="col-sm-4">Database / columns</dt>
+        <dd class="col-sm-8 mb-0">The app upgrades SQLite with new columns on startup. If you use a copied old DB and see errors, check the console or recreate the DB from README.</dd>
+      </dl>
+    </div>
+  </div>
+
+  <p class="text-center mt-4 mb-0">
+    <a href="{{ url_for('main.landing') }}" class="guest-footer-link">← Back to overview</a>
+    {% if not current_user.is_authenticated %} · <a href="{{ url_for('auth.login') }}" class="guest-footer-link">Sign in</a>{% endif %}
+  </p>
+</div>
+{% endblock %}
